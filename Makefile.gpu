@@ -1,0 +1,21 @@
+CC = gcc
+NVCC = nvcc
+CFLAGS = -std=c99 -Wall -O3
+NVCCFLAGS = -O2
+SFMTFLAGS = -I ./SFMT-src-1.5.1/ -D SFMT_MEXP=19937
+MISC_OBJS = SFMT.o timer.o
+
+all: random_gpu
+
+random_gpu: random_gpu.cu $(MISC_OBJS)
+	$(NVCC) $(NVCCFLAGS) $(SFMTFLAGS) -o $@ $^ -lm
+
+SFMT.o: ./SFMT-src-1.5.1/SFMT.c
+	$(CC) $(CFLAGS) $(SFMTFLAGS) -o $@ -c $<
+timer.o: timer.c
+	$(CC) $(CFLAGS) -o $@ -c $<
+
+clean:
+	rm -f random_gpu *.o *~
+distclean: clean
+	rm -f *.dat
